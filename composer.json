@@ -1,24 +1,55 @@
 {
-    "name": "ivopetkov/html5-dom-document-php",
+    "name": "softcreatr/html5-dom-document-php",
     "description": "HTML5 DOMDocument PHP library (extends DOMDocument)",
     "license": "MIT",
+    "version": "3.0.0",
     "authors": [
         {
             "name": "Ivo Petkov",
             "email": "ivo@ivopetkov.com",
-            "homepage": "http://ivopetkov.com"
+            "homepage": "https://ivopetkov.com"
+        },
+        {
+            "name": "Sascha Greuel",
+            "email": "hello@1-2.dev",
+            "homepage": "https://1-2.dev"
         }
     ],
+    "homepage": "https://1-2.dev",
+    "support": {
+        "email": "hello@1-2.dev",
+        "issues": "https://github.com/SoftCreatR/html5-dom-document-php/issues",
+        "source": "https://github.com/SoftCreatR/html5-dom-document-php"
+    },
     "require": {
-        "php": "7.0.*|7.1.*|7.2.*|7.3.*|7.4.*|8.0.*|8.1.*|8.2.*|8.3.*",
-        "ext-dom": "*"
+        "php": ">=8.1.0",
+        "ext-dom": "*",
+        "ext-libxml": "*"
     },
     "require-dev": {
-        "ivopetkov/docs-generator": "1.*"
+        "phpunit/phpunit": ">=10.0"
     },
+    "replace": {
+        "ivopetkov/html5-dom-document-php": "*"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
-        "files": [
-            "autoload.php"
-        ]
+        "psr-4": {
+            "SoftCreatR\\HTML5DOMDocument\\": "src/SoftCreatR/HTML5DOMDocument"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SoftCreatR\\Tests\\HTML5DOMDocument\\": "tests/SoftCreatR/HTML5DOMDocument"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

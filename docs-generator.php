@@ -13,6 +13,6 @@ $docsGenerator = new IvoPetkov\DocsGenerator(__DIR__);
 $docsGenerator->addSourceDir('/src');
 $options = [
     'showProtected' => false,
-    'showPrivate' => false
+    'showPrivate' => false,
 ];
 $docsGenerator->generateMarkdown(__DIR__ . '/docs/markdown', $options);

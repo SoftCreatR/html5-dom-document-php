@@ -1,110 +1,129 @@
 # HTML5DOMDocument
 
-HTML5DOMDocument extends the native [DOMDocument](http://php.net/manual/en/class.domdocument.php) library. It fixes some bugs and adds some new functionality.
+HTML5DOMDocument extends the native [DOMDocument](http://php.net/manual/en/class.domdocument.php) class in PHP. It fixes some long-standing issues and introduces additional, modern functionality for handling HTML5 documents.
 
-[![Latest Stable Version](https://poser.pugx.org/ivopetkov/html5-dom-document-php/v/stable)](https://packagist.org/packages/ivopetkov/html5-dom-document-php)
-[![License](https://poser.pugx.org/ivopetkov/html5-dom-document-php/license)](https://packagist.org/packages/ivopetkov/html5-dom-document-php)
+[![Latest Stable Version](https://poser.pugx.org/softcreatr/html5-dom-document-php/v/stable)](https://packagist.org/packages/softcreatr/html5-dom-document-php)
+[![License](https://poser.pugx.org/softcreatr/html5-dom-document-php/license)](https://packagist.org/packages/softcreatr/html5-dom-document-php)
 
-## Why use?
+## Why Use HTML5DOMDocument?
 
-- Preserves html entities (DOMDocument does not)
-- Preserves void tags (DOMDocument does not)
-- Allows **inserting HTML code** that moves the correct parts to their proper places (head elements are inserted in the head, body elements in the body)
-- Allows **querying the DOM with CSS selectors** (currently available: *, tagname, tagname#id, #id, tagname.classname, .classname, tagname.classname.classname2, .classname.classname2, tagname[attribute-selector], [attribute-selector], "div, p", div p, div > p, div + p and p ~ ul.)
-- Adds support for element->classList.
-- Adds support for element->innerHTML.
-- Adds support for element->outerHTML.
+- **Preserves HTML entities** that the native DOMDocument does not handle properly.
+- **Preserves void tags** like `<input>` or `<br>`, which DOMDocument tends to mishandle.
+- Allows **inserting HTML code** correctly into the document, ensuring that head and body elements are placed in their respective sections.
+- Enables **CSS-style selectors** for querying the DOM:
+    - Supported selectors include `*`, `tagname`, `tagname#id`, `#id`, `tagname.classname`, `.classname`, multiple class selectors, attribute selectors, and complex selectors like `div p`, `div > p`, `div + p`, `p ~ ul`, and `div, p`.
+- **Element manipulation** with:
+    - `element->classList` for manipulating classes
+    - `element->innerHTML` for working with the contents of an element
+    - `element->outerHTML` for manipulating an entire element as a string
+- **Efficient handling of duplicate elements and IDs** with advanced HTML insertion and validation.
 
-## Install via Composer
+## Installation via Composer
+
+Install via [Composer](https://getcomposer.org/) with the following command:
 
 ```shell
-composer require "ivopetkov/html5-dom-document-php:2.*"
+composer require "softcreatr/html5-dom-document-php:3.*"
 ```
+
+## Features & Improvements
+
+- **ClassList Support**: The library adds support for manipulating classes of elements through the `classList` property, making it easier to work with CSS class attributes.
+- **Enhanced Query Selectors**: Use advanced CSS-like selectors for querying elements from the DOM, such as:
+    - `div > p` (direct child)
+    - `div + p` (adjacent sibling)
+    - `p ~ ul` (general sibling)
+    - `[attribute]`, `[attribute=value]`, etc.
+- **HTML Insertion**: It allows inserting fragments of HTML into the document, intelligently placing them in the correct location (e.g., scripts into `<head>`, content into `<body>`).
+- **Custom Insert Targets**: Define custom targets within the document for precise HTML insertion.
 
 ## Documentation
 
-Full [documentation](https://github.com/ivopetkov/html5-dom-document-php/blob/master/docs/markdown/index.md) is available as part of this repository.
+Comprehensive [documentation](https://github.com/softcreatr/html5-dom-document-php/blob/main/docs/markdown/index.md) is available in the repository.
 
 ## Examples
 
-Use just like you should use DOMDocument:
+### Basic Usage
+
+Use HTML5DOMDocument just like the native DOMDocument:
+
 ```php
 <?php
 require 'vendor/autoload.php';
 
-$dom = new IvoPetkov\HTML5DOMDocument();
-$dom->loadHTML('<!DOCTYPE html><html><body>Hello</body></html>');
+$dom = new \SoftCreatR\HTML5DOMDocument\HTML5DOMDocument();
+$dom->loadHTML('<!DOCTYPE html><html><body>Hello World!</body></html>');
 echo $dom->saveHTML();
 ```
 
-Query the document with CSS selectors and get the innerHTML and the outerHTML of the elements:
+### Querying with CSS Selectors
 
 ```php
-$dom = new IvoPetkov\HTML5DOMDocument();
+$dom = new \SoftCreatR\HTML5DOMDocument\HTML5DOMDocument();
 $dom->loadHTML('<!DOCTYPE html><html><body><h1>Hello</h1><div class="content">This is some text</div></body></html>');
 
-echo $dom->querySelector('h1')->innerHTML;
-// Hello
-
-echo $dom->querySelector('.content')->outerHTML;
-// <div class="content">This is some text</div>
+echo $dom->querySelector('h1')->innerHTML;  // Outputs: Hello
+echo $dom->querySelector('.content')->outerHTML;  // Outputs: <div class="content">This is some text</div>
 ```
 
-Insert HTML code into a HTML document (other HTML code):
+### Inserting HTML Code
 
 ```php
-$dom = new IvoPetkov\HTML5DOMDocument();
+$dom = new \SoftCreatR\HTML5DOMDocument\HTML5DOMDocument();
 $dom->loadHTML('
     <!DOCTYPE html>
     <html>
-        <head>
-            <style>...</style>
-        </head>
-        <body>
-            <h1>Hello</h1>
-        </body>
+        <head><style>body { color: red; }</style></head>
+        <body><h1>Hello</h1></body>
     </html>
 ');
 
 $dom->insertHTML('
     <html>
-        <head>
-            <script>...</script>
-        </head>
-        <body>
-            <div>This is some text</div>
-        </body>
+        <head><script>alert("JS Script")</script></head>
+        <body><div>This is some text</div></body>
     </html>
 ');
 
 echo $dom->saveHTML();
-// <!DOCTYPE html>
-//     <html>
-//         <head>
-//             <style>...</style>
-//             <script>...</script>
-//         </head>
-//         <body>
-//             <h1>Hello</h1>
-//             <div>This is some text</div>
-//         </body>
-//     </html>
+// Properly merges new elements into the existing head and body.
 ```
 
-Manipulate the values of the class attribute of an element:
+### Manipulating Class Attribute
 
 ```php
-$dom = new IvoPetkov\HTML5DOMDocument();
+$dom = new \SoftCreatR\HTML5DOMDocument\HTML5DOMDocument();
 $dom->loadHTML('<div class="class1"></div>');
 
-echo $dom->querySelector('div')->classList->add('class2');
+$div = $dom->querySelector('div');
+$div->classList->add('class2');
+$div->classList->remove('class1');
+
+echo $div->getAttribute('class');  // Outputs: "class2"
+```
+
+### Custom Insert Targets
+
+```php
+$dom = new \SoftCreatR\HTML5DOMDocument\HTML5DOMDocument();
+$dom->loadHTML('<html><body><div id="main"></div></body></html>');
+
+$mainDiv = $dom->querySelector('#main');
+$mainDiv->appendChild($dom->createInsertTarget('name1'));
+
+$dom->insertHTML('<div id="new-content">New content</div>', 'name1');
+echo $dom->saveHTML();
 ```
 
 ## License
-This project is licensed under the MIT License. See the [license file](https://github.com/ivopetkov/html5-dom-document-php/blob/master/LICENSE) for more information.
+
+This project is licensed under the MIT License. See the [license file](https://github.com/softcreatr/html5-dom-document-php/blob/main/LICENSE) for more details.
 
 ## Contributing
-Feel free to open new issues and contribute to the project. Let's make it awesome and let's do in a positive way.
+
+Contributions are welcome! Feel free to open issues or submit pull requests to improve this library. Let's collaborate to make it even better.
 
 ## Authors
-This library is created and maintained by [Ivo Petkov](https://github.com/ivopetkov/) ([ivopetkov.com](https://ivopetkov.com)) and some [awesome folks](https://github.com/ivopetkov/html5-dom-document-php/graphs/contributors).
+
+- Original library by [Ivo Petkov](https://github.com/ivopetkov/).
+- V3 and ongoing maintenance by [Sascha Greuel](https://github.com/softcreatr/).

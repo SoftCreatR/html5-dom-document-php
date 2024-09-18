@@ -1,0 +1,54 @@
+name: Test
+
+on:
+  push:
+    paths:
+      - '**.php'
+      - 'composer.json'
+    branches:
+      - 'main'
+  pull_request:
+    paths:
+      - '**.php'
+      - 'composer.json'
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.1', '8.2', '8.3', '8.4' ]
+    continue-on-error: ${{ matrix.php == '8.4' }}
+    name: PHP ${{ matrix.php }} Test
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: pcov
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Execute tests
+        run: composer test -- --coverage-clover=coverage.xml
+
+      #- name: Run codecov
+      #  uses: codecov/codecov-action@v4
+      #  with:
+      #    token: ${{ secrets.CODECOV_TOKEN }}
